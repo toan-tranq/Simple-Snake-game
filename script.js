@@ -1,6 +1,22 @@
 const canvas = document.getElementById("snakeGame");
 const ctx = canvas.getContext("2d");
 const scoreElement = document.getElementById("scoreVal");
+const highScoreElement = document.getElementById("highScoreVal");
+
+// High Score Management with LocalStorage
+function getHighScore() {
+    const highScore = localStorage.getItem("snakeHighScore");
+    return highScore ? parseInt(highScore) : 0;
+}
+
+function setHighScore(score) {
+    localStorage.setItem("snakeHighScore", score.toString());
+    highScoreElement.textContent = score;
+}
+
+// Load and display high score on page load
+let highScore = getHighScore();
+highScoreElement.textContent = highScore;
 
 // Collision detection function
 function collision(head, array) {
@@ -80,7 +96,16 @@ function draw() {
     let bodyOnly = snake.slice(1); // Skip the head, check only body segments
     if(snakeX < 0 || snakeX + box > canvas.width || snakeY < 0 || snakeY + box > canvas.height || collision(newHead, bodyOnly)) {
         clearInterval(game);
-        alert("Game Over! Score: " + score);
+        
+        // Check and update high score
+        if(score > highScore) {
+            highScore = score;
+            setHighScore(highScore);
+            alert("Game Over! New High Score: " + score + "!");
+        } else {
+            alert("Game Over! Score: " + score + "\nHigh Score: " + highScore);
+        }
+        
         location.reload(); 
     }
 
